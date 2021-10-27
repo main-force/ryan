@@ -1,20 +1,21 @@
 #include <iostream>
+#include <vector>
+#include <unordered_map>
 #define HOMEOSTASIS_NUM 2
+#define PERSONALITY_NUM 5
 //--------------------------------------
 
-struct Personality {
-    double openess; //개방성
-    double conscientiousness; //성실성
-    double extraversion; //외향성
-    double agreeableness; //우호성
-    double neuroticism; //신경증
+enum Personality {
+    OPENESS, //개방성
+    CONSCIENTIOUSNESS, //성실성
+    EXTRAVERSION, //외향성
+    AGREEABLENESS, //우호성
+    NEUROTICISM, //신경증
 };
 
-struct Homeostasis {
-    std::size_t size = HOMEOSTASIS_NUM;
-
-    double life;
-    double happiness;
+enum Homeostasis {
+    LIFE,
+    HAPPINESS,
 };
 
 class Behavior {
@@ -24,24 +25,36 @@ class Behavior {
 class Actant {
 public:
     bool isSafe();
+    std::unordered_map<Homeostasis, bool> danger_homeostasis_element_map();
 
 private:
-    Personality personality;
-    Homeostasis homeostasis;
+    std::unordered_map<Personality, double> personality;
+    std::unordered_map<Homeostasis, double> homeostasis;
     Behavior behavior;
 };
 
 bool Actant::isSafe() {
     bool result;
-    if (homeostasis.life <= 20) result = false;
+    if (homeostasis[LIFE] <= 20) result = false;
     else result = true;
 
     return result;
 }
 
-//TODO: vector로 위험한 인덱스에 true 반환
-Actant::find_danger_element{
+// Until Here.
+std::unordered_map<Homeostasis, bool> Actant::danger_homeostasis_element_map() {
+    std::unordered_map<Homeostasis, bool> danger_element_map;
+    for(auto kv : homeostasis) {
+        bool is_danger = false;
+        if (kv.first == LIFE) {
+            if(kv.second < 20) {
+                is_danger = true;
+            }
+        }
+        danger_element_map.insert({kv.first, is_danger});
+    }
 
+    return danger_element_map;
 };
 
 //--------------------------------------
