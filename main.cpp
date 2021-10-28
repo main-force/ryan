@@ -18,8 +18,12 @@ enum Homeostasis {
     HAPPINESS,
 };
 
+
 class Behavior {
-    //TODO
+public:
+    virtual std::unordered_map<Personality, double> pass_personality_property() const = 0;
+private:
+    std::unordered_map<Personality, double> personality_property;
 };
 
 class Actant {
@@ -30,7 +34,6 @@ public:
 private:
     std::unordered_map<Personality, double> personality;
     std::unordered_map<Homeostasis, double> homeostasis;
-    Behavior behavior;
 };
 
 bool Actant::isSafe() {
@@ -41,7 +44,6 @@ bool Actant::isSafe() {
     return result;
 }
 
-// Until Here.
 std::unordered_map<Homeostasis, bool> Actant::danger_homeostasis_element_map() {
     std::unordered_map<Homeostasis, bool> danger_element_map;
     for(auto kv : homeostasis) {
@@ -56,6 +58,14 @@ std::unordered_map<Homeostasis, bool> Actant::danger_homeostasis_element_map() {
 
     return danger_element_map;
 };
+
+//UntilNow
+class BehaviorManager {
+public:
+    void pass_property_to_actant(std::unordered_map<Personality, double> personality_map, Actant actant);
+
+};
+
 
 //--------------------------------------
 struct Color {
@@ -75,7 +85,6 @@ private:
     UniqueCharacteristic unique_characteristic;
 };
 
-
 //---------------------------------------
 int main() {
 
@@ -85,6 +94,7 @@ int main() {
             //추가적인 일을 하면 됨...
         }
         else  { //안전하지 못한 상태일 때
+            auto danger_homeostasis_element_map = actant1.danger_homeostasis_element_map();
 
         }
         break;
