@@ -83,7 +83,7 @@ UniqueCharacter Actant::FindSolverCharacter() {
 
 std::unordered_map<Homeostasis, bool> Actant::IsDangerHomeostasisElementMap() {
     std::unordered_map<Homeostasis, bool> danger_element_map;
-    // Do Later 더 간단하게 수정할 수 있음.
+    // DoLater 더 간단하게 수정할 수 있음.
     for(auto kv : homeostasis_) {
         bool is_danger = false;
         if (kv.first == LIFE) {
