@@ -18,35 +18,73 @@ enum Homeostasis {
     HAPPINESS,
 };
 
+struct Color {
+    int red;
+    int green;
+    int blue;
+};
 
-class Behavior {
+//---------------------------------
+
+// UniqueCharacter은 개체의 고유 속성이자, 외부에서 볼 수 있는 개체의 고유 속성의 집합임.
+class UniqueCharacter {
 public:
-    virtual std::unordered_map<Personality, double> pass_personality_property() const = 0;
+    explicit UniqueCharacter(Color color) : color_(std::move(color)) {}
 private:
-    std::unordered_map<Personality, double> personality_property;
+    Color color_;
+};
+
+class Object {
+private:
+    Homeostasis homeostasis_;
+    UniqueCharacter unique_character_;
+};
+
+//---------------------------------------
+class Behavior { // Until here. 행동 클래스 여러개 제작해야함.
+public:
+    explicit Behavior(std::unordered_map<Personality, double> personality_property)
+        : personality_property_(std::move(personality_property)) {}
+    virtual std::unordered_map<Personality, double> PassPersonalityProperty() const = 0;
+private:
+    std::unordered_map<Personality, double> personality_property_;
+};
+
+class LookAround : public Behavior {
+
 };
 
 class Actant {
 public:
     bool isSafe();
-    std::unordered_map<Homeostasis, bool> danger_homeostasis_element_map();
+    UniqueCharacter FindSolverCharacter();
+    bool Solve(UniqueCharacter target_character);
 
 private:
-    std::unordered_map<Personality, double> personality;
-    std::unordered_map<Homeostasis, double> homeostasis;
+    std::unordered_map<Personality, double> personality_;
+    std::unordered_map<Homeostasis, double> homeostasis_;
+    std::unordered_map<Homeostasis, bool> IsDangerHomeostasisElementMap();
 };
 
 bool Actant::isSafe() {
-    bool result;
-    if (homeostasis[LIFE] <= 20) result = false;
-    else result = true;
-
-    return result;
+    if (homeostasis_[LIFE] <= 20) return false;
+    else return true;
 }
 
-std::unordered_map<Homeostasis, bool> Actant::danger_homeostasis_element_map() {
+UniqueCharacter Actant::FindSolverCharacter() {
+    for(auto kv : IsDangerHomeostasisElementMap()) {
+        if(kv.second) {
+            // Calculate what character is needed.
+        }
+    }
+    // Test Case임. 나중에는 계산해서 만드는걸로 바꿔야됨.
+    return UniqueCharacter(Color{ 255, 100, 0 });
+}
+
+std::unordered_map<Homeostasis, bool> Actant::IsDangerHomeostasisElementMap() {
     std::unordered_map<Homeostasis, bool> danger_element_map;
-    for(auto kv : homeostasis) {
+    // Do Later 더 간단하게 수정할 수 있음.
+    for(auto kv : homeostasis_) {
         bool is_danger = false;
         if (kv.first == LIFE) {
             if(kv.second < 20) {
@@ -59,33 +97,13 @@ std::unordered_map<Homeostasis, bool> Actant::danger_homeostasis_element_map() {
     return danger_element_map;
 };
 
-//UntilNow
 class BehaviorManager {
 public:
-    void pass_property_to_actant(std::unordered_map<Personality, double> personality_map, Actant actant);
-
+    void PassPropertyToActant(std::unordered_map<Personality, double> personality_map, Actant actant);
 };
-
 
 //--------------------------------------
-struct Color {
-    int red;
-    int green;
-    int blue;
-};
 
-class UniqueCharacteristic {
-private:
-    Color color;
-};
-
-class Object {
-private:
-    Homeostasis homeostasis;
-    UniqueCharacteristic unique_characteristic;
-};
-
-//---------------------------------------
 int main() {
 
     Actant actant1;
@@ -94,8 +112,8 @@ int main() {
             //추가적인 일을 하면 됨...
         }
         else  { //안전하지 못한 상태일 때
-            auto danger_homeostasis_element_map = actant1.danger_homeostasis_element_map();
-
+            UniqueCharacter target_character = actant1.FindSolverCharacter();
+            actant1.Solve(target_character);
         }
         break;
     }
