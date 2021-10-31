@@ -40,19 +40,45 @@ private:
     UniqueCharacter unique_character_;
 };
 
-//---------------------------------------
-class Behavior { // Until here. 행동 클래스 여러개 제작해야함.
+//=============================================
+class Behavior {
 public:
-    explicit Behavior(std::unordered_map<Personality, double> personality_property)
-        : personality_property_(std::move(personality_property)) {}
-    virtual std::unordered_map<Personality, double> PassPersonalityProperty() const = 0;
-private:
+    Behavior() {
+        std::cout << "Behavior Called" << std::endl;
+        Personality personality_arr[PERSONALITY_NUM] =
+                { OPENESS, CONSCIENTIOUSNESS, EXTRAVERSION, AGREEABLENESS, NEUROTICISM };
+        for(auto personality : personality_arr) {
+            personality_property_[personality] = .0;
+        }
+        can_pass_homeostasis_ = false;
+    }
+    std::unordered_map<Personality, double> personality_property();
+    bool IsEscapeBehavior();
+protected:
     std::unordered_map<Personality, double> personality_property_;
+    bool can_pass_homeostasis_;
 };
 
+bool Behavior::IsEscapeBehavior(){
+    return can_pass_homeostasis_;
+}
+
+std::unordered_map<Personality, double> Behavior::personality_property(){
+    return personality_property_;
+}
+
+//----------------------------------------
 class LookAround : public Behavior {
-
+public:
+    LookAround() {
+        std::cout << "LookAround called" << std::endl;
+        personality_property_[OPENESS] = 0.1;
+        can_pass_homeostasis_ = false;
+    }
 };
+//Until here. Solve 프로세스 설계할 차례
+
+//==========================================
 
 class Actant {
 public:
@@ -113,7 +139,8 @@ int main() {
         }
         else  { //안전하지 못한 상태일 때
             UniqueCharacter target_character = actant1.FindSolverCharacter();
-            actant1.Solve(target_character);
+            LookAround a;
+            //actant1.Solve(target_character);
         }
         break;
     }
