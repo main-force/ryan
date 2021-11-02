@@ -44,7 +44,6 @@ private:
 class Behavior {
 public:
     Behavior() {
-        std::cout << "Behavior Called" << std::endl;
         Personality personality_arr[PERSONALITY_NUM] =
                 { OPENESS, CONSCIENTIOUSNESS, EXTRAVERSION, AGREEABLENESS, NEUROTICISM };
         for(auto personality : personality_arr) {
@@ -107,6 +106,11 @@ UniqueCharacter Actant::FindSolverCharacter() {
     return UniqueCharacter(Color{ 255, 100, 0 });
 }
 
+bool Actant::Solve(UniqueCharacter target_character) {
+    //Solve를 구현하려면, 실 세계가 필요해.. 실세계 구현 방법을 알아내자.
+    //Python으로 세계 구현하는게 우선이니까 일단 구현할거임.
+}
+
 std::unordered_map<Homeostasis, bool> Actant::IsDangerHomeostasisElementMap() {
     std::unordered_map<Homeostasis, bool> danger_element_map;
     // DoLater 더 간단하게 수정할 수 있음.
@@ -139,7 +143,6 @@ int main() {
         }
         else  { //안전하지 못한 상태일 때
             UniqueCharacter target_character = actant1.FindSolverCharacter();
-            LookAround a;
             //actant1.Solve(target_character);
         }
         break;
