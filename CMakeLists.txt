@@ -3,4 +3,4 @@ project(ryan)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(ryan main.cpp)
+add_executable(ryan test_read_fifo.cpp)
