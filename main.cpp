@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <QTextStream>
 #define HOMEOSTASIS_NUM 2
 #define PERSONALITY_NUM 5
 //--------------------------------------
