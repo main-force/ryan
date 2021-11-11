@@ -1,8 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <unistd.h>
-#include <ncurses.h>
 
 #define HOMEOSTASIS_NUM 2
 #define PERSONALITY_NUM 5
@@ -136,47 +134,7 @@ public:
     void PassPropertyToActant(std::unordered_map<Personality, double> personality_map, Actant actant);
 };
 
-//Draw function 구현하기
 
-#define WORLD_WIDTH 100
-#define WORLD_HEIGHT 100
-
-void run() {
-    int world_width[WORLD_HEIGHT][WORLD_WIDTH];
-
-    initscr();
-
-    int row = 1, col = 1;
-    border('@', '@', '@', '@', '@', '@', '@', '@');
-
-
-    noecho(); // 입력을 자동으로 화면에 출력하지 않도록 합니다.
-    curs_set(FALSE); // cursor를 보이지 않게 합니다.
-
-    keypad(stdscr, TRUE);
-    while(1){
-        int input = getch();
-        clear();
-        switch(input){
-            case KEY_UP:
-                mvprintw(--row, col, "A"); // real moving in your screen
-                continue;
-            case KEY_DOWN:
-                mvprintw(++row, col, "A");
-                continue;
-            case KEY_LEFT:
-                mvprintw(row, --col, "A");
-                continue;
-            case KEY_RIGHT:
-                mvprintw(row, ++col, "A");
-                continue;
-
-        }
-        if(input == 'q') break;
-    }
-
-    endwin();
-}
 
 //--------------------------------------
 
@@ -190,7 +148,6 @@ int main() {
         else  { //안전하지 못한 상태일 때
             UniqueCharacter target_character = actant1.FindSolverCharacter();
             //actant1.Solve(target_character);
-            run();
         }
         break;
     }

@@ -7,5 +7,5 @@ set(CMAKE_PREFIX_PATH "/opt/homebrew/opt/ncurses")
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
-add_executable(ryan main.cpp)
+add_executable(ryan application.cpp)
 target_link_libraries(ryan ${CURSES_LIBRARIES})
