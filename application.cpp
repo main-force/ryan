@@ -1,10 +1,11 @@
 #include <ncurses.h>
+#include <sys/socket.h>
 
 #define WORLD_WIDTH 64
 #define WORLD_HEIGHT 16
+//WORLD_INIT_ROW and COLUMN must > 0
 #define WORLD_INIT_ROW 2
 #define WORLD_INIT_COLUMN 2
-
 
 struct Wall {
     int init_col = WORLD_INIT_COLUMN;
@@ -31,12 +32,21 @@ void DrawWorld() {
     refresh();
 }
 
+void DrawActant() {
+    //Socket 통신을 통해 Actant의 init위치 데이터 가져오기
+}
+
 void Init() {
     initscr();
     noecho(); // 입력을 자동으로 화면에 출력하지 않도록 합니다.
     curs_set(FALSE); // cursor를 보이지 않게 합니다.
     DrawWorld();
 }
+
+
+
+
+
 
 int main() {
     Init();
