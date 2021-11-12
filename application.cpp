@@ -9,26 +9,34 @@
 
 struct Wall {
     int init_col = WORLD_INIT_COLUMN;
-    int end_col = WORLD_INIT_COLUMN + WORLD_WIDTH;
+    int end_col = WORLD_INIT_COLUMN + WORLD_WIDTH - 1;
 };
 
 struct Floor {
     int init_row = WORLD_INIT_ROW;
-    int end_row = WORLD_INIT_ROW + WORLD_HEIGHT;
+    int end_row = WORLD_INIT_ROW + WORLD_HEIGHT - 1;
 };
 
 void DrawWorld() {
-    //Draw the wall;
+    //Draw the walls.;
     for(size_t curs = 0; curs < WORLD_HEIGHT; curs++) {
-        mvprintw(WORLD_INIT_ROW + curs, Wall().init_col - 1, "|");
-        mvprintw(WORLD_INIT_ROW + curs, Wall().end_col, "|");
+        mvprintw(Floor().init_row + curs, Wall().init_col - 1, "|");
+        mvprintw(Floor().init_row + curs, Wall().end_col + 1, "|");
     }
 
-    // Draw the floor.
+    //Draw the edges.
+    mvprintw(Floor().init_row - 1, Wall().init_col - 1, "+");
+    mvprintw(Floor().init_row - 1, Wall().end_col + 1, "+");
+    mvprintw(Floor().end_row + 1, Wall().end_col + 1, "+");
+    mvprintw(Floor().end_row + 1, Wall().init_col - 1, "+");
+
+    //Draw the floor.
     for(size_t curs = 0; curs < WORLD_WIDTH; curs++) {
-        mvprintw(Floor().init_row - 1, WORLD_INIT_COLUMN + curs, "-");
-        mvprintw(Floor().end_row, WORLD_INIT_COLUMN + curs, "-");
+        mvprintw(Floor().init_row - 1, Wall().init_col + curs, "-");
+        mvprintw(Floor().end_row + 1, Wall().init_col + curs, "-");
     }
+
+    //Draw element on the window.
     refresh();
 }
 
