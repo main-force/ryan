@@ -1,5 +1,6 @@
+//여기에다가 데이터 받는 클라이언트용 소켓을 넣어야 함.
+
 #include <ncurses.h>
-#include <sys/socket.h>
 
 #define WORLD_WIDTH 64
 #define WORLD_HEIGHT 16

@@ -109,7 +109,6 @@ UniqueCharacter Actant::FindSolverCharacter() {
 
 bool Actant::Solve(UniqueCharacter target_character) {
     //Solve를 구현하려면, 실 세계가 필요해.. 실세계 구현 방법을 알아내자.
-    //Python으로 세계 구현하는게 우선이니까 일단 구현할거임.
     //Socket 통신으로 파이썬과 cpp가 소통할 예정.
 }
 
