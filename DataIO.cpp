@@ -31,7 +31,7 @@ int Server::DataIO::ClientInfo() {
 
 int Server::DataIO::ListenConnectionRequest() {
     //Server
-    struct sockaddr_in s_addr = {
+    struct sockaddr_in saddr = {
             .sin_family = AF_INET,
             .sin_port = htons(PORT),
             .sin_addr = in_addr { .s_addr = INADDR_ANY }
@@ -45,7 +45,7 @@ int Server::DataIO::ListenConnectionRequest() {
         return -1;
     }
 
-    if (bind(socketServer, (struct sockaddr*)&s_addr, sizeof(s_addr)) == -1) {
+    if (bind(socketServer, (struct sockaddr*)&saddr, sizeof(saddr)) == -1) {
         std::cerr << "Not able to bind to the socket." << std::endl;
         return -1;
     }
@@ -96,7 +96,50 @@ int Server::DataIO::ReceiveData() {
     return 0;
 }
 
-
 char *Server::DataIO::get_data() {
     return buff;
+}
+
+//---------------------------Client-----------------------------
+Client::DataIO::DataIO() {
+    RequestConnection();
+}
+
+Client::DataIO::~DataIO() {
+    close(socketClient);
+}
+
+
+int Client::DataIO::RequestConnection() {
+    struct sockaddr_in saddr = {
+            .sin_family = AF_INET,
+            .sin_port = htons(PORT),
+            .sin_addr = in_addr { .s_addr = inet_addr(SERVERIP) }
+    };
+
+    socketClient = socket(AF_INET, SOCK_STREAM, 0);
+
+    if(connect(socketClient, (struct sockaddr*)&saddr, sizeof(saddr)) == -1) {
+        std::cerr << "Connecting Failed." << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+int Client::DataIO::SendData() {
+    if(send(socketClient, buff, BUFSIZE, 0) == -1) {
+        if(errno != EINTR) {
+            fprintf(stderr, "Send Error: %s\n", strerror(errno)); return -1;
+        }
+    }
+    else {
+        std::cout << "Completely send the message." << std::endl;
+    }
+}
+
+
+//UntilHere
+int Client::DataIO::ReceiveData() {
+
 }
