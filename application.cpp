@@ -1,5 +1,5 @@
 //여기에다가 데이터 받는 클라이언트용 소켓을 넣어야 함.
-
+//Socket으로 데이터 받아서 Draw하기.
 #include <ncurses.h>
 
 #define WORLD_WIDTH 64
@@ -51,11 +51,6 @@ void Init() {
     curs_set(FALSE); // cursor를 보이지 않게 합니다.
     DrawWorld();
 }
-
-
-
-
-
 
 int main() {
     Init();

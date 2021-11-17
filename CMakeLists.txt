@@ -8,4 +8,4 @@ include_directories(${CURSES_INCLUDE_DIR})
 add_executable(RyanApplication application.cpp)
 target_link_libraries(RyanApplication ${CURSES_LIBRARIES})
 
-add_executable(RyanServer server.cpp)
+add_executable(RyanServer server.cpp World.cpp)
