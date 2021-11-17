@@ -3,12 +3,21 @@
 #include "World.h"
 #include "Actant.h"
 #include "Object.h"
-
+#include "DataIO.h"
 //--------------------------------------
 
 int main() {
+
+    DataIO data_io;
+    while(true) {
+        if(data_io.ReceiveData() == -1) break;
+        std::cout << "Received: " << data_io.get_data() << std::endl;
+
+    }
     World world;
     Actant actant1;
+
+    /*
     while(true) {
         if (actant1.isSafe()) {
             //추가적인 일을 하면 됨...
@@ -19,5 +28,6 @@ int main() {
         }
         break;
     }
+     */
     return 0;
 }

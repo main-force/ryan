@@ -1,6 +1,8 @@
 #ifndef RYAN_UNIQUECHARACTER_H
 #define RYAN_UNIQUECHARACTER_H
 
+#include <iostream>
+
 enum Personality {
     OPENESS, //개방성
     CONSCIENTIOUSNESS, //성실성
