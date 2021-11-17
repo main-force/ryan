@@ -3,16 +3,16 @@
 #include <unistd.h>
 #include <iostream>
 
-DataIO::DataIO() {
+Server::DataIO::DataIO() {
     caddrSize = sizeof(caddr);
     ListenConnectionRequest();
 }
 
-DataIO::~DataIO() {
+Server::DataIO::~DataIO() {
     close(socketClient);
 }
 
-int DataIO::ClientInfo() {
+int Server::DataIO::ClientInfo() {
     char hostClient[NI_MAXHOST];
     char portClient[32];
     memset(hostClient, 0, NI_MAXHOST);
@@ -29,7 +29,7 @@ int DataIO::ClientInfo() {
     return 0;
 }
 
-int DataIO::ListenConnectionRequest() {
+int Server::DataIO::ListenConnectionRequest() {
     //Server
     struct sockaddr_in s_addr = {
             .sin_family = AF_INET,
@@ -78,7 +78,7 @@ int DataIO::ListenConnectionRequest() {
     return 0;
 }
 
-int DataIO::ReceiveData() {
+int Server::DataIO::ReceiveData() {
     ssize_t sizeInBytesOfReceiveData;
 
     sizeInBytesOfReceiveData = recv(socketClient, buff, BUFSIZE, 0);
@@ -97,6 +97,6 @@ int DataIO::ReceiveData() {
 }
 
 
-char *DataIO::get_data() {
+char *Server::DataIO::get_data() {
     return buff;
 }

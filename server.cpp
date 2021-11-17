@@ -7,8 +7,7 @@
 //--------------------------------------
 
 int main() {
-
-    DataIO data_io;
+    Server::DataIO data_io;
     while(true) {
         if(data_io.ReceiveData() == -1) break;
         std::cout << "Received: " << data_io.get_data() << std::endl;
