@@ -4,10 +4,12 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <string>
 
 #define BUFSIZE 4096
 #define PORT 9999
 #define SERVERIP "127.0.0.1" //Default is local. Change this with your server ip.
+#define DELIMETER '$'
 
 namespace Server{
     class DataIO {
@@ -15,13 +17,15 @@ namespace Server{
         DataIO();
         ~DataIO();
         int ReceiveData();
-        char *get_data();
+        static std::string MakeMessage(const char* code, const char* message);
+        int SendData(const std::string& send_data) const;
+        std::string get_data();
         int ClientInfo();
     private:
         struct sockaddr_in caddr{};
         socklen_t caddrSize;
         int socketClient{};
-        char buff[BUFSIZE]{};
+        std::string data;
         int ListenConnectionRequest();
     };
 }
@@ -33,13 +37,15 @@ namespace Client{
         DataIO();
         ~DataIO();
         int ReceiveData();
-        int SendData();
-        char *get_data();
+        int SendData(const std::string& send_data) const;
+        std::string get_result_code();
+        std::string get_result_message();
     private:
-        int socketClient{};
-        char buff[BUFSIZE]{};
+        int socketServer{};
+        std::string data;
         int RequestConnection();
     };
 }
 
+std::string convertToString(const char *buff);
 #endif //RYAN_DATAIO_H

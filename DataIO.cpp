@@ -2,6 +2,7 @@
 #include <string>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 
 Server::DataIO::DataIO() {
     caddrSize = sizeof(caddr);
@@ -79,6 +80,7 @@ int Server::DataIO::ListenConnectionRequest() {
 }
 
 int Server::DataIO::ReceiveData() {
+    char buff[BUFSIZE];
     ssize_t sizeInBytesOfReceiveData;
 
     sizeInBytesOfReceiveData = recv(socketClient, buff, BUFSIZE, 0);
@@ -87,17 +89,40 @@ int Server::DataIO::ReceiveData() {
         return -1;
     } else if (sizeInBytesOfReceiveData == 0) {
         std::cout << "Client Disconnected" << std::endl;
-        return 0;
+        return -1;
     }
-    send(socketClient, buff, sizeInBytesOfReceiveData, 0);
-
     std::cout << std::string(buff, 0, sizeInBytesOfReceiveData) << std::endl;
+
+    data = convertToString(buff);
 
     return 0;
 }
 
-char *Server::DataIO::get_data() {
-    return buff;
+std::string Server::DataIO::MakeMessage(const char* code, const char* message){
+    std::stringstream ss;
+    ss << code;
+    ss << DELIMETER;
+    ss << message;
+    return ss.str();
+}
+
+int Server::DataIO::SendData(const std::string& send_data) const {
+    char buff[BUFSIZE];
+    strcpy(buff, send_data.c_str());
+
+    if(send(socketClient, buff, BUFSIZE, 0) == -1) {
+        if(errno != EINTR) {
+            fprintf(stderr, "Send Error: %s\n", strerror(errno)); return -1;
+        }
+    }
+    else {
+        std::cout << "Completely send the message." << std::endl;
+    }
+
+    return 0;
+}
+std::string Server::DataIO::get_data() {
+    return data;
 }
 
 //---------------------------Client-----------------------------
@@ -106,7 +131,7 @@ Client::DataIO::DataIO() {
 }
 
 Client::DataIO::~DataIO() {
-    close(socketClient);
+    close(socketServer);
 }
 
 
@@ -117,9 +142,9 @@ int Client::DataIO::RequestConnection() {
             .sin_addr = in_addr { .s_addr = inet_addr(SERVERIP) }
     };
 
-    socketClient = socket(AF_INET, SOCK_STREAM, 0);
+    socketServer = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(connect(socketClient, (struct sockaddr*)&saddr, sizeof(saddr)) == -1) {
+    if(connect(socketServer, (struct sockaddr*)&saddr, sizeof(saddr)) == -1) {
         std::cerr << "Connecting Failed." << std::endl;
         return -1;
     }
@@ -127,8 +152,11 @@ int Client::DataIO::RequestConnection() {
     return 0;
 }
 
-int Client::DataIO::SendData() {
-    if(send(socketClient, buff, BUFSIZE, 0) == -1) {
+int Client::DataIO::SendData(const std::string& send_data) const {
+    char buff[BUFSIZE];
+    strcpy(buff, send_data.c_str());
+
+    if(send(socketServer, buff, BUFSIZE, 0) == -1) {
         if(errno != EINTR) {
             fprintf(stderr, "Send Error: %s\n", strerror(errno)); return -1;
         }
@@ -136,10 +164,43 @@ int Client::DataIO::SendData() {
     else {
         std::cout << "Completely send the message." << std::endl;
     }
+    return 0;
 }
 
-
-//UntilHere
 int Client::DataIO::ReceiveData() {
+    ssize_t sizeInBytesOfReceiveData;
 
+    char buff[BUFSIZE];
+
+    sizeInBytesOfReceiveData = recv(socketServer, buff, BUFSIZE, 0);
+    if (sizeInBytesOfReceiveData == -1) {
+        std::cerr << "Error while receive message. Quiting";
+        return -1;
+    } else if (sizeInBytesOfReceiveData == 0) {
+        std::cout << "Server Disconnected" << std::endl;
+        return -1;
+    }
+
+    //Receive Complete.
+    data = convertToString(buff);
+    return 0;
+}
+
+std::string Client::DataIO::get_result_code() {
+    const std::string received_string = data;
+    size_t pos = received_string.find(DELIMETER);
+    return received_string.substr(0, pos);
+}
+
+std::string Client::DataIO::get_result_message() {
+    const std::string received_string = data;
+    size_t pos = received_string.find(DELIMETER);
+    return received_string.substr(pos + 1, received_string.length());
+}
+
+//==============================================
+
+std::string convertToString(const char *buff) {
+    std::string buff_to_string(buff);
+    return buff_to_string;
 }
