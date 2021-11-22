@@ -14,19 +14,17 @@
 namespace Server{
     class DataIO {
     public:
-        DataIO();
-        ~DataIO();
         int ReceiveData();
         static std::string MakeMessage(const char* code, const char* message);
         int SendData(const std::string& send_data) const;
         std::string get_data();
+        int ListenConnectionRequest();
         int ClientInfo();
     private:
         struct sockaddr_in caddr{};
         socklen_t caddrSize;
         int socketClient{};
         std::string data;
-        int ListenConnectionRequest();
     };
 }
 

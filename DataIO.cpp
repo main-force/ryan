@@ -4,14 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-Server::DataIO::DataIO() {
-    caddrSize = sizeof(caddr);
-    ListenConnectionRequest();
-}
-
-Server::DataIO::~DataIO() {
-    close(socketClient);
-}
 
 int Server::DataIO::ClientInfo() {
     char hostClient[NI_MAXHOST];
@@ -58,6 +50,7 @@ int Server::DataIO::ListenConnectionRequest() {
     std::cout << "[Server] Listen on port " << PORT << std::endl;
 
     //Waiting client
+    caddrSize = sizeof(caddr);
     socketClient = accept(socketServer, (struct sockaddr*)&caddr, (socklen_t*)&caddrSize);
 
     //=============================================
@@ -83,9 +76,11 @@ int Server::DataIO::ReceiveData() {
     char buff[BUFSIZE];
     ssize_t sizeInBytesOfReceiveData;
 
+    caddrSize = sizeof(caddr);
     sizeInBytesOfReceiveData = recv(socketClient, buff, BUFSIZE, 0);
+
     if (sizeInBytesOfReceiveData == -1) {
-        std::cerr << "Error while receive message. Quiting";
+        std::cerr << "Error while receive message. Quiting: " << strerror(errno);
         return -1;
     } else if (sizeInBytesOfReceiveData == 0) {
         std::cout << "Client Disconnected" << std::endl;
@@ -132,6 +127,7 @@ Client::DataIO::DataIO() {
 
 Client::DataIO::~DataIO() {
     close(socketServer);
+
 }
 
 
@@ -174,7 +170,7 @@ int Client::DataIO::ReceiveData() {
 
     sizeInBytesOfReceiveData = recv(socketServer, buff, BUFSIZE, 0);
     if (sizeInBytesOfReceiveData == -1) {
-        std::cerr << "Error while receive message. Quiting";
+        std::cerr << "Error while receive message. Quiting: " << strerror(errno);
         return -1;
     } else if (sizeInBytesOfReceiveData == 0) {
         std::cout << "Server Disconnected" << std::endl;

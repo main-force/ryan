@@ -61,6 +61,12 @@ Client::DataIO Init() {
         }
         else if(data_io.get_result_code() == "C") {
             std::cout << data_io.get_result_message() << std::endl;
+            //break;
+        }
+
+        else if(data_io.get_result_code() == "E") {
+            //Exit
+            std::cout << data_io.get_result_message() << std::endl;
             break;
         }
     }
@@ -73,7 +79,7 @@ Client::DataIO Init() {
 
 int main() {
     Client::DataIO data_io = Init();
-    int row = 1, col = 1;
+    /*int row = 1, col = 1;
     keypad(stdscr, TRUE);
     while(1){
         int input = getch();
@@ -97,6 +103,6 @@ int main() {
     }
 
     endwin();
-
+    */
     return 0;
 }
