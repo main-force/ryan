@@ -12,57 +12,53 @@
 
 //--------------------------------------
 
-
-
-void Init(std::promise<Server::DataIO> &&promised_data_io) {
-    Server::DataIO data_io;
-    //auto* data_io = new Server::DataIO;
-    data_io.ListenConnectionRequest();
-    while(true) {
-        data_io.ReceiveData();
-        if(data_io.get_data() == "Start") {
-            std::string message = Server::DataIO::MakeMessage("C", "Complete");
-            data_io.SendData(message);
-            promised_data_io.set_value(data_io);
-            break;
-        }
-        else {
-            std::string message = Server::DataIO::MakeMessage("F", "Please send 'Start' first.");
-            data_io.SendData(message);
-        }
-    }
-}
-
 int main() {
+    // Listen client connection request the other thread.
+    //have to fix this future data io.
     Server::DataIO data_io;
-    std::promise<Server::DataIO> promised_data_io;
-    auto future_data_io = promised_data_io.get_future();
-    std::thread listen_client(&Init, std::move(promised_data_io));
+
+    std::future<Server::DataIO> future_data_io;
+
+    bool is_running_thread = false;
+
+    size_t cnt = 0;
 
     while(true) {
-        if (future_data_io.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            std::cout << "Not Connected" << std::endl;
+        if(!is_running_thread) {
+            std::promise<Server::DataIO> promised_data_io;
+            future_data_io = promised_data_io.get_future();
+            std::thread listen_client(&Server::ClientConnectionWait, std::move(promised_data_io));
+            listen_client.detach();
+            is_running_thread = true;
         }
-        else {
-            //End Init.
-            std::cout << "Connected" << std::endl;
-            //Send the world data to client.
+
+        auto connection_status = future_data_io.wait_for(std::chrono::milliseconds(0));
+        if (Server::IsConnectedToClient(connection_status)) {
             data_io = future_data_io.get();
-            listen_client.join();
+            is_running_thread = false;
+            //클라이언트한테 월드 요청 리퀘스트 대기 후 World 데이터 전송.
+            //Send the world data to client.
             while(true) {
-                data_io.ReceiveData();
-                if(data_io.get_data() == "Hello") {
-                    std::cout << "Receive Hello" << std::endl;
-                    data_io.SendData(Server::DataIO::MakeMessage("E", "Exit."));
+                //RunOnce()은 Actant의 Event(상호작용) 한번이 루프 한번.
+                //RunOnce();
+                if(data_io.ReceiveData() == -1) {
                     break;
                 }
-                else {
-                    std::cout << data_io.get_data() << std::endl;
-                    data_io.SendData(Server::DataIO::MakeMessage("C", "Server:Complete receive the message."));
+                if(data_io.ProcessReceivedData() == -1) {
+                    break;
+                }
+                if(data_io.get_data() == "Exit") {
+                    break;
                 }
             }
-            break;
+           // Restart listening client connection request.
+
+        } else {
+            cnt++;
+            if(cnt == 500) { break; }
+            //RunOnce();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::cout << "[Server]:Not Connected" << std::endl;
         }
     }
 

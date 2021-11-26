@@ -50,30 +50,34 @@ void DrawActant() {
 
 Client::DataIO Init() {
     Client::DataIO data_io;
-    char buff[BUFSIZE];
     while(true) {
+        char buff[BUFSIZE];
         std::cout << "Input the message: ";
         std::cin >> buff;
         data_io.SendData(buff);
         data_io.ReceiveData();
-        if(data_io.get_result_code() == "F") {
-            std::cout << data_io.get_result_message() << std::endl;
+        if(data_io.get_result_code() == "E") {
+            std::cout << "[Server]:" << data_io.get_result_message() << std::endl;
+            break;
         }
-        else if(data_io.get_result_code() == "C") {
-            std::cout << data_io.get_result_message() << std::endl;
+        else if(data_io.get_result_code() == "S") {
+            std::cout << "[Server]:" << data_io.get_result_message() << std::endl;
             //break;
         }
 
-        else if(data_io.get_result_code() == "E") {
+        else if(data_io.get_result_code() == "C") {
             //Exit
-            std::cout << data_io.get_result_message() << std::endl;
+            std::cout << "[Server]:" << data_io.get_result_message() << std::endl;
             break;
         }
     }
+
+    /*
     initscr();
     noecho(); // 입력을 자동으로 화면에 출력하지 않도록 합니다.
     curs_set(FALSE); // cursor를 보이지 않게 합니다.
-    //DrawWorld();
+    DrawWorld();
+    */
     return data_io;
 }
 

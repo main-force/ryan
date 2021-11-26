@@ -5,6 +5,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string>
+#include <future>
+#include <unordered_map>
+#include <functional>
+#include <vector>
 
 #define BUFSIZE 4096
 #define PORT 9999
@@ -14,18 +18,34 @@
 namespace Server{
     class DataIO {
     public:
-        int ReceiveData();
-        static std::string MakeMessage(const char* code, const char* message);
-        int SendData(const std::string& send_data) const;
-        std::string get_data();
+        DataIO();
+
         int ListenConnectionRequest();
         int ClientInfo();
+        int ReceiveData();
+        int SendData(const std::string& send_data);
+        int ProcessReceivedData();
+        std::string get_data();
+        bool IsConnected();
+
     private:
+        bool is_connected = false;
         struct sockaddr_in caddr{};
-        socklen_t caddrSize;
+        socklen_t caddrSize{};
+        int socketServer{};
         int socketClient{};
         std::string data;
+        std::unordered_map<std::string, std::function<int(Server::DataIO&)>> req_res_map;
+        void CloseSocket();
+
+        int ClientStart();
+        int ClientExit();
+        int BadRequest();
     };
+
+    void ClientConnectionWait(std::promise<Server::DataIO> &&promised_data_io);
+    bool IsConnectedToClient(std::future_status connection_status);
+    std::string MakeMessage(const char* code, const char* message);
 }
 
 //Until here. World 요구사항을 Server로부터 당겨오기.
