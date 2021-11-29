@@ -25,9 +25,12 @@ struct Color {
 // UniqueCharacter은 개체의 고유 속성이자, 외부에서 볼 수 있는 개체의 고유 속성의 집합임.
 class UniqueCharacter {
 public:
-    explicit UniqueCharacter(Color color) : color_(std::move(color)) {}
+    UniqueCharacter() {
+        this->color_ = Color{0,0,0};
+    }
+    explicit UniqueCharacter(Color color) : color_(color) {}
 private:
-    Color color_;
+    Color color_{};
 };
 
 #endif //RYAN_UNIQUECHARACTER_H

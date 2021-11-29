@@ -1,26 +1,30 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <sstream>
 #include <thread>
 #include <future>
 #include <chrono>
 #include "World.h"
-#include "Actant.h"
-#include "Object.h"
 #include "DataIO.h"
-
-//--------------------------------------
+#include "Existence.h"
+//==========Configure==========
+#define WORLD_WIDTH 64
+#define WORLD_HEIGHT 16
+//==========Configure==========
 
 int main() {
     // Listen client connection request the other thread.
-    //have to fix this future data io.
+    // have to fix this future data io.
     Server::DataIO data_io;
-
     std::future<Server::DataIO> future_data_io;
-
     bool is_running_thread = false;
 
+    // Init World.
+    World world(WORLD_WIDTH, WORLD_HEIGHT);
+    Actant actant(32, 8);
+    world.addExistence(actant);
+
+    // Delete later.
     size_t cnt = 0;
 
     while(true) {

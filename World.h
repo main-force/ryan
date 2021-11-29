@@ -1,26 +1,20 @@
-#include <cstddef>
-
 #ifndef RYAN_WORLD_H
 #define RYAN_WORLD_H
 
-struct WidthPosition {
-    int init_x;
-    int end_x;
-};
-
-struct HeightPosition {
-    int init_y;
-    int end_y;
-};
+#include <cstddef>
+#include <vector>
+#include "Existence.h"
 
 class World {
 public:
-    World();
+    World(size_t width, size_t height);
+    int addExistence(Existence& existence);
+    int setExistence(Position pos, Existence& existence);
+
 private:
     size_t width{};
     size_t height{};
-    WidthPosition width_pos{};
-    HeightPosition height_pos{};
+    std::vector<std::vector<Existence*>> world_matrix;
 };
 
 #endif //RYAN_WORLD_H

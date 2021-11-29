@@ -1,23 +1,29 @@
 #include "World.h"
 
-//==========Configure==========
-#define WORLD_WIDTH 64
-#define WORLD_HEIGHT 16
+World::World(size_t width, size_t height) {
+    width = width;
+    height = height;
+    for (size_t i = 0; i < height; i++) {
+        world_matrix.emplace_back(std::vector<Existence*>(width, new None()));
+    }
+    std::cout << "World init is succeed." << std::endl;
+}
 
-//WORLD_INIT_ROW and COLUMN must > 0
-#define WORLD_INIT_Y 2
-#define WORLD_INIT_X 2
-//==========Configure==========
+int World::addExistence(Existence& existence) {
+    Position origin_pos = existence.getPos();
+    auto none_existence = world_matrix[origin_pos.x][origin_pos.y];
+    world_matrix[origin_pos.x][origin_pos.y] = &existence;
+    delete none_existence;
+    return 0;
+}
 
-World::World() {
-    width = WORLD_WIDTH;
-    height = WORLD_HEIGHT;
-    width_pos = WidthPosition {
-            .init_x = WORLD_INIT_X,
-            .end_x = WORLD_INIT_X + WORLD_WIDTH - 1
-    };
-    height_pos = HeightPosition {
-            .init_y = WORLD_INIT_Y,
-            .end_y = WORLD_INIT_Y + WORLD_HEIGHT - 1
-    };
+int World::setExistence(Position pos, Existence& existence) {
+    Position origin_pos = existence.getPos();
+    // 항상 그 칸에 있는 None 메모리는 메모리 해제 or existence의 위치로 이동.
+    // 여기서는 existence가 항상 이동 가능하다고 가정.
+    // 이동가능한 곳은 None인 곳.
+    Existence* none_existence = world_matrix[pos.x][pos.y];
+    world_matrix[pos.x][pos.y] = &existence;
+    world_matrix[origin_pos.x][origin_pos.y] = none_existence;
+    return 0;
 }

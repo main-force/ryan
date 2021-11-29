@@ -1,4 +1,25 @@
-#include "Actant.h"
+#include "Existence.h"
+
+int Existence::setPos(int x, int y){
+    pos.x = x;
+    pos.y = y;
+    return 0;
+}
+
+Position Existence::getPos(){
+    return pos;
+}
+
+Object::Object(int x, int y) : Existence() {
+    setPos(x, y);
+    homeostasis_ = LIFE;
+}
+
+//----------------------------------------------
+
+Actant::Actant(int x, int y) : Existence() {
+    setPos(x, y);
+}
 
 bool Actant::isSafe() {
     if (homeostasis_[LIFE] <= 20) return false;
