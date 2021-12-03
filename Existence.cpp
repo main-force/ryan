@@ -10,9 +10,17 @@ Position Existence::getPos(){
     return pos;
 }
 
+ExistenceType Existence::getType() {
+    return OBJ;
+}
+
 Object::Object(int x, int y) : Existence() {
     setPos(x, y);
     homeostasis_ = LIFE;
+}
+
+ExistenceType Object::getType() {
+    return type;
 }
 
 //----------------------------------------------
@@ -56,4 +64,13 @@ std::unordered_map<Homeostasis, bool> Actant::IsDangerHomeostasisElementMap() {
     }
 
     return danger_element_map;
+}
+
+ExistenceType Actant::getType() {
+    return type;
+}
+
+//---------------------
+ExistenceType None::getType() {
+    return type;
 }

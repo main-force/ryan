@@ -14,7 +14,6 @@ struct Floor {
     int end_row = WORLD_INIT_ROW + WORLD_HEIGHT - 1;
 };
 
-
 void Draw::DrawWorld(&World world) {
     //Draw the walls.;
     for(size_t curs = 0; curs < WORLD_HEIGHT; curs++) {

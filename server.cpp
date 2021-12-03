@@ -21,7 +21,7 @@ int main() {
 
     // Init World.
     World world(WORLD_WIDTH, WORLD_HEIGHT);
-    Actant actant(32, 8);
+    Actant actant(8, 32);
     world.addExistence(actant);
 
     // Delete later.
@@ -42,22 +42,19 @@ int main() {
             is_running_thread = false;
             //클라이언트한테 월드 요청 리퀘스트 대기 후 World 데이터 전송.
             //Send the world data to client.
+            data_io.SendWorldConfigure(world);
+            int num = 33;
             while(true) {
                 //RunOnce()은 Actant의 Event(상호작용) 한번이 루프 한번.
                 //RunOnce();
-                if(data_io.ReceiveData() == -1) {
+                if (data_io.SendWorld(world) == -1) {
                     break;
                 }
-                if(data_io.ProcessReceivedData() == -1) {
-                    break;
-                }
-                if(data_io.get_data() == "Exit") {
-                    break;
-                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             }
            // Restart listening client connection request.
-
-        } else {
+        }
+        else {
             cnt++;
             if(cnt == 500) { break; }
             //RunOnce();

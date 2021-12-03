@@ -8,8 +8,11 @@
 class World {
 public:
     World(size_t width, size_t height);
+    std::string getWorldMatrixString();
     int addExistence(Existence& existence);
     int setExistence(Position pos, Existence& existence);
+    size_t getWidth() const;
+    size_t getHeight() const;
 
 private:
     size_t width{};

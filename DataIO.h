@@ -10,6 +10,8 @@
 #include <functional>
 #include <vector>
 
+#include "World.h"
+
 #define BUFSIZE 4096
 #define PORT 9999
 #define SERVERIP "127.0.0.1" //Default is local. Change this with your server ip.
@@ -24,9 +26,12 @@ namespace Server{
         int ClientInfo();
         int ReceiveData();
         int SendData(const std::string& send_data);
+        int SendWorldConfigure(World& world);
+        int SendWorld(World& world);
         int ProcessReceivedData();
         std::string get_data();
         bool IsConnected();
+        int CloseSocket();
 
     private:
         bool is_connected = false;
@@ -36,8 +41,6 @@ namespace Server{
         int socketClient{};
         std::string data;
         std::unordered_map<std::string, std::function<int(Server::DataIO&)>> req_res_map;
-        void CloseSocket();
-
         int ClientStart();
         int ClientExit();
         int BadRequest();
@@ -58,6 +61,7 @@ namespace Client{
         int SendData(const std::string& send_data) const;
         std::string get_result_code();
         std::string get_result_message();
+        DataIO Init();
     private:
         int socketServer{};
         std::string data;

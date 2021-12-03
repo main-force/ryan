@@ -1,19 +1,34 @@
 #include "World.h"
 
 World::World(size_t width, size_t height) {
-    width = width;
-    height = height;
-    for (size_t i = 0; i < height; i++) {
-        world_matrix.emplace_back(std::vector<Existence*>(width, new None()));
+    this->width = width;
+    this->height = height;
+    for (int i = 0; i < height; i++) {
+        world_matrix.emplace_back(std::vector<Existence*>());
+        for (int j = 0; j < width; j++) {
+            Existence* none_object = new None();
+            none_object->setPos(i, j);
+            world_matrix[i].emplace_back(none_object);
+        }
     }
     std::cout << "World init is succeed." << std::endl;
 }
 
+std::string World::getWorldMatrixString() {
+    std::string result;
+    for(auto & y : world_matrix) {
+        for (auto & exist : y) {
+            result.append(std::to_string(exist->getType()));
+        }
+    }
+    return result;
+}
+
 int World::addExistence(Existence& existence) {
-    Position origin_pos = existence.getPos();
-    auto none_existence = world_matrix[origin_pos.x][origin_pos.y];
-    world_matrix[origin_pos.x][origin_pos.y] = &existence;
-    delete none_existence;
+    Position target_pos = existence.getPos();
+    Existence* none_object = world_matrix[target_pos.x][target_pos.y];
+    world_matrix[target_pos.x][target_pos.y] = &existence;
+    delete none_object;
     return 0;
 }
 
@@ -26,4 +41,12 @@ int World::setExistence(Position pos, Existence& existence) {
     world_matrix[pos.x][pos.y] = &existence;
     world_matrix[origin_pos.x][origin_pos.y] = none_existence;
     return 0;
+}
+
+size_t World::getWidth() const {
+    return this->width;
+}
+
+size_t World::getHeight() const {
+    return this->height;
 }

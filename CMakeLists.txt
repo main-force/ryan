@@ -5,7 +5,7 @@ project(ryan)
 set(CMAKE_PREFIX_PATH "/opt/homebrew/opt/ncurses")
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
-add_executable(RyanApplication application.cpp DataIO.cpp)
+add_executable(RyanApplication application.cpp DataIO.cpp World.cpp Existence.cpp)
 target_link_libraries(RyanApplication ${CURSES_LIBRARIES})
 
 add_executable(RyanServer server.cpp DataIO.cpp World.cpp Existence.cpp)

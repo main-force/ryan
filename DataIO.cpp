@@ -6,7 +6,6 @@
 
 Server::DataIO::DataIO() {
     req_res_map["Start"] = &Server::DataIO::ClientStart;
-    req_res_map["Exit"] = &Server::DataIO::ClientExit;
     // Start and Exit execute flow control.
     // So, if you change the trigger message,
     // Exit: you must go server.cpp and change the if condition.
@@ -90,7 +89,6 @@ int Server::DataIO::ReceiveData() {
 int Server::DataIO::SendData(const std::string& send_data) {
     char buff[BUFSIZE];
     strcpy(buff, send_data.c_str());
-
     if(send(socketClient, buff, BUFSIZE, 0) == -1) {
         if(errno != EINTR) {
             std::cerr << "[Server]:Send Error$" << strerror(errno) << std::endl;
@@ -103,6 +101,33 @@ int Server::DataIO::SendData(const std::string& send_data) {
     }
 
     return 0;
+}
+
+int Server::DataIO::SendWorldConfigure(World& world) {
+    if (ReceiveData() == -1) {
+        return -1;
+    }
+    if (get_data() == "WorldConfigure") {
+        std::cout << "World width" << world.getWidth() << std::endl;
+        std::string world_configure = std::to_string(world.getWidth()) + DELIMETER + std::to_string(world.getHeight());
+        return SendData(Server::MakeMessage("WC", world_configure.c_str()));
+    }
+    else {
+        return -1;
+    }
+}
+
+int Server::DataIO::SendWorld(World& world) {
+    if (ReceiveData() == -1) {
+        return -1;
+    }
+    if (get_data() == "World") {
+        std::string world_string = world.getWorldMatrixString();
+        return SendData(Server::MakeMessage("W", world_string.c_str()));
+    }
+    else {
+        return -1;
+    }
 }
 
 int Server::DataIO::ProcessReceivedData() {
@@ -121,23 +146,17 @@ bool Server::DataIO::IsConnected() {
     return is_connected;
 }
 
-void Server::DataIO::CloseSocket() {
-    SendData(Server::MakeMessage("C", "Close connection."));
+int Server::DataIO::CloseSocket() {
     is_connected = false;
     close(socketServer);
     close(socketClient);
+    return 0;
 }
 
 int Server::DataIO::ClientStart() {
     ClientInfo();
     // S: Success
     return SendData(Server::MakeMessage("S", "Connect server with client."));
-}
-
-int Server::DataIO::ClientExit() {
-    // C: Close
-    CloseSocket();
-    return 0;
 }
 
 int Server::DataIO::BadRequest() {
@@ -165,17 +184,18 @@ void Server::ClientConnectionWait(std::promise<Server::DataIO> &&promised_data_i
         std::this_thread::sleep_for(std::chrono::milliseconds(10000));
     }
 
-    {
+    while(true){
         if(data_io.ReceiveData() == -1){
             promised_data_io.set_value(data_io);
+            break;
         }
 
         if(data_io.get_data() == "Start") {
             data_io.ProcessReceivedData();
             promised_data_io.set_value(data_io);
+            break;
         }
         else {
-            promised_data_io.set_value(data_io);
             data_io.SendData(Server::MakeMessage("E", "Please send 'Start' first."));
         }
     }
@@ -191,11 +211,31 @@ Client::DataIO::DataIO() {
     if (RequestConnection() == -1) {
         std::exit(-1);
     }
+
+    while(true) {
+        char buff[BUFSIZE];
+        std::cout << "Input the reqeust message: ";
+        std::cin >> buff;
+        SendData(buff);
+        ReceiveData();
+        if(get_result_code() == "E") {
+            std::cout << "[Server]:" << get_result_message() << std::endl;
+        }
+        else if(get_result_code() == "C") {
+            //Exit
+            std::cout << "[Server]:" << get_result_message() << std::endl;
+            std::exit(0);
+        }
+        else if(get_result_code() == "S") {
+            // Ready to receive world data when client request start to server.
+            std::cout << "[Server]:" << get_result_message() << std::endl;
+            break;
+        }
+    }
 }
 
 Client::DataIO::~DataIO() {
     close(socketServer);
-
 }
 
 
@@ -225,9 +265,7 @@ int Client::DataIO::SendData(const std::string& send_data) const {
             fprintf(stderr, "[Client]:Send Error: %s\n", strerror(errno)); return -1;
         }
     }
-    else {
-        std::cout << "[Client]:" << send_data << std::endl;
-    }
+
     return 0;
 }
 
