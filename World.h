@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <sstream>
 #include "Existence.h"
 
 class World {
