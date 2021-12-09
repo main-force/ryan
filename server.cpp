@@ -21,8 +21,18 @@ int main() {
 
     // Init World.
     World world(WORLD_WIDTH, WORLD_HEIGHT);
-    Actant actant(8, 32);
-    world.addExistence(actant);
+    if (world.addExistence(*(new Actant(8, 32))) == -1) {
+        // Can't add this position.
+    }
+    // this is apple!
+    if (world.addExistence(*(new Object(8, 48, 5)))) {
+        // Can't add this position.
+    }
+    // this is stone!
+    if (world.addExistence(*(new Object(4, 16, -100)))) {
+        // Can't add this position.
+    }
+
 
     // Delete later.
     size_t cnt = 0;
@@ -50,7 +60,8 @@ int main() {
                 if (data_io.SendWorld(world) == -1) {
                     break;
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+                // Sleep 0.5 second.
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
            // Restart listening client connection request.
         }

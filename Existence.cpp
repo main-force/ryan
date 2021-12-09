@@ -14,19 +14,37 @@ ExistenceType Existence::getType() {
     return OBJ;
 }
 
-Object::Object(int x, int y) : Existence() {
+int Existence::RunOnce(std::vector<std::vector<Existence*>>& world_matrix) {
+    // Do Nothing
+    return 0;
+}
+
+//---------------------Object---------------------
+
+Object::Object(int x, int y, double life) : Existence() {
     setPos(x, y);
-    homeostasis_ = LIFE;
+    homeostasis_[LIFE] = life;
 }
 
 ExistenceType Object::getType() {
     return type;
 }
 
-//----------------------------------------------
+int Object::setHomeostasis(Homeostasis homeostasis, double value) {
+    homeostasis_[homeostasis] = value;
+    return 0;
+}
+
+double Object::getHomeostasis(Homeostasis homeostasis) {
+    return homeostasis_[homeostasis];
+}
+
+//---------------------Actant-------------------
 
 Actant::Actant(int x, int y) : Existence() {
     setPos(x, y);
+    homeostasis_[LIFE] = 100.0;
+    sight = 2;
 }
 
 bool Actant::isSafe() {
@@ -70,7 +88,22 @@ ExistenceType Actant::getType() {
     return type;
 }
 
-//---------------------
+int Actant::RunOnce(std::vector<std::vector<Existence*>>& world_matrix) {
+    // Decrease life 1 per one phase.
+    setHomeostasis(LIFE, getHomeostasis(LIFE) - 1.0);
+
+}
+
+int Actant::setHomeostasis(Homeostasis homeostasis, double value) {
+    homeostasis_[homeostasis] = value;
+    return 0;
+}
+
+double Actant::getHomeostasis(Homeostasis homeostasis) {
+    return homeostasis_[homeostasis];
+}
+
+//---------------------None------------------
 ExistenceType None::getType() {
     return type;
 }

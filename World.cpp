@@ -14,6 +14,28 @@ World::World(size_t width, size_t height) {
     std::cout << "World init is succeed." << std::endl;
 }
 
+int World::RunOnce(){
+    // Run world for one phase.
+
+    std::vector<Existence*> existence_list = getExistenceList();
+    for (auto existence : existence_list) {
+        existence->RunOnce(world_matrix);
+    }
+    return 0;
+}
+
+std::vector<Existence*> World::getExistenceList() {
+    std::vector<Existence*> existence_list;
+    for(size_t i = 0; i < getHeight(); i++) {
+        for(size_t j = 0; j < getWidth(); j++) {
+            if(world_matrix[i][j]->getType() == ACT) {
+                existence_list.emplace_back(world_matrix[i][j]);
+            }
+        }
+    }
+    return existence_list;
+}
+
 std::string World::getWorldMatrixString() {
     std::string result;
     for(auto & y : world_matrix) {
@@ -26,10 +48,17 @@ std::string World::getWorldMatrixString() {
 
 int World::addExistence(Existence& existence) {
     Position target_pos = existence.getPos();
-    Existence* none_object = world_matrix[target_pos.x][target_pos.y];
-    world_matrix[target_pos.x][target_pos.y] = &existence;
-    delete none_object;
-    return 0;
+    if (world_matrix[target_pos.x][target_pos.y]->getType() == NONE) {
+        Existence* none_object = world_matrix[target_pos.x][target_pos.y];
+        world_matrix[target_pos.x][target_pos.y] = &existence;
+        delete none_object;
+        return 0;
+    }
+    else {
+        // Can't add this position
+        delete &existence;
+        return -1;
+    }
 }
 
 int World::setExistence(Position pos, Existence& existence) {

@@ -20,7 +20,7 @@ class Existence {
 public:
     int setPos(int x, int y);
     Position getPos();
-
+    virtual int RunOnce(std::vector<std::vector<Existence*>>& world_matrix);
     virtual ExistenceType getType();
 private:
     Position pos;
@@ -28,11 +28,14 @@ private:
 
 class Object : public Existence{
 public:
-    Object(int x, int y);
+    Object(int x, int y, double life);
     ExistenceType getType() override;
+    double getHomeostasis(Homeostasis homeostasis);
+
 private:
     ExistenceType type = OBJ;
-    Homeostasis homeostasis_;
+    std::unordered_map<Homeostasis, double> homeostasis_;
+    int setHomeostasis(Homeostasis homeostasis, double value);
     UniqueCharacter unique_character_;
 };
 
@@ -43,11 +46,17 @@ public:
     UniqueCharacter FindSolverCharacter();
     bool Solve(UniqueCharacter target_character);
     ExistenceType getType() override;
+    int RunOnce(std::vector<std::vector<Existence*>>& world_matrix) override;
+    double getHomeostasis(Homeostasis homeostasis);
+
 private:
     ExistenceType type = ACT;
     std::unordered_map<Personality, double> personality_;
     std::unordered_map<Homeostasis, double> homeostasis_;
+    int sight;
+    int setHomeostasis(Homeostasis homeostasis, double value);
     std::unordered_map<Homeostasis, bool> IsDangerHomeostasisElementMap();
+
 };
 
 class None : public Existence{
